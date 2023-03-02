@@ -77,10 +77,14 @@ module.exports = {
         sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
       }
       if (k !== "limit" || k !== "skip" || k !== "sortBy") {
-        filters[k] = Utils.toLowerCaseFilter(req.query[k]);
+        if (k === "enabled") {
+          filters[k] = filters[k] === "true" ? true : false;
+        } else {
+          filters[k] = Utils.toLowerCaseFilter(req.query[k]);
+        }
       }
     });
-
+    console.log(filters);
     try {
       const books = await GetBookService.getBookList(
         req,
