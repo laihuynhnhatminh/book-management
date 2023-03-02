@@ -5,17 +5,15 @@ require("dotenv").config();
 require("./db/mongoose")();
 
 // Routers
-const userRouter = require("./routers/user");
+const userRoutes = require("./routes/user");
+const bookRoutes = require("./routes/book");
 
 const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
-app.use(userRouter);
-
-app.get("", (req, res) => {
-  res.send({ message: "Hello, world!" });
-});
+app.use(userRoutes);
+app.use(bookRoutes);
 
 app.listen(port, () => {
   console.log(`Listening on ${port}`);

@@ -14,7 +14,6 @@ const bookSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
       trim: true,
     },
     enabled: {
@@ -22,7 +21,7 @@ const bookSchema = new mongoose.Schema(
       default: true,
     },
     image: {
-      type: Buffer,
+      type: String,
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,

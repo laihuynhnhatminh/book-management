@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 
-const { PASSWORD_REGEX } = require("../common/constant");
+const { PASSWORD_REGEX } = require("../utils/common/constant");
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -39,12 +39,11 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
   avatar: {
-    type: Buffer,
+    type: String,
   },
   role_id: {
     type: String,
     required: true,
-    ref: "Role",
   },
   tokens: [
     {
@@ -69,6 +68,7 @@ userSchema.methods.toJSON = function () {
   delete userObject.password;
   delete userObject.tokens;
   delete userObject.avatar;
+  delete userObject.role_id;
   delete userObject.enabled;
 
   return userObject;
