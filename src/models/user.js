@@ -55,19 +55,11 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Reference user to book
-userSchema.virtual("books", {
-  ref: "Book",
-  localField: "_id",
-  foreignField: "user_id",
-});
-
 // Remove certain datas from JSON file
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
   delete userObject.tokens;
-  delete userObject.avatar;
   delete userObject.role_id;
   delete userObject.enabled;
 
@@ -78,7 +70,8 @@ userSchema.methods.toJSON = function () {
 userSchema.methods.generateAuthToken = async function () {
   const token = jwt.sign(
     { _id: this._id.toString() },
-    process.env.JWT_SECRET_KEY
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: "1h" }
   );
   this.tokens = this.tokens.concat({ token });
   await this.save();

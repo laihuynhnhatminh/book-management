@@ -41,7 +41,7 @@ module.exports = {
     if (!isValidOperation) {
       return res
         .status(403)
-        .send({ success: false, data: { message: "Operation not allowed" } });
+        .send({ success: false, data: { error: "Operation not allowed" } });
     }
 
     try {
@@ -70,6 +70,7 @@ module.exports = {
     const userRole = await VerifyUserService.checkUserRole(req, res);
     const filters = {};
     const sort = {};
+    // Update sort and filters from query
     Object.keys(req.query).forEach((k) => {
       if (k === "sortBy") {
         const parts = req.query.sortBy.split("_");

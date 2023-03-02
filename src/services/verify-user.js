@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const ErrorHandler = require("../services/handle-error");
+const { UserRoleEnum } = require("../utils/common/enum");
 
 async function getUserRole(req, res) {
   return User.aggregate([
@@ -18,7 +19,7 @@ async function getUserRole(req, res) {
 
 module.exports = {
   checkUserRole: async (req, res) => {
-    if (!req.user) return "Guest";
+    if (!req.user) return UserRoleEnum.GUEST;
     const user = await getUserRole(req, res);
     return user[0].role.name;
   },

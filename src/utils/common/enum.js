@@ -1,7 +1,9 @@
-const userRoleEnum = {
+const UserRoleEnum = {
   ADMIN: "Admin",
   USER: "User",
   GUEST: "Guest",
 };
 
-module.exports = userRoleEnum;
+module.exports = {
+  UserRoleEnum,
+};

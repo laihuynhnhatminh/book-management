@@ -1,10 +1,11 @@
 const Book = require("../models/book");
+const { UserRoleEnum } = require("../utils/common/enum");
 
 module.exports = {
   getBookList: async (req, res, filters, sort, userRole) => {
     let query = {};
     switch (userRole) {
-      case "User":
+      case UserRoleEnum.USER:
         query = {
           $and: [
             {
@@ -14,7 +15,7 @@ module.exports = {
           ],
         };
         break;
-      case "Admin":
+      case UserRoleEnum.ADMIN:
         query = {
           ...filters,
         };
@@ -36,7 +37,7 @@ module.exports = {
   getSpecificBook: async (req, res, userRole) => {
     let query = { _id: req.params.id };
     switch (userRole) {
-      case "User":
+      case UserRoleEnum.USER:
         query = {
           $and: [
             { $or: [{ user_id: req.user._id }, { enabled: true }] },
@@ -44,7 +45,7 @@ module.exports = {
           ],
         };
         break;
-      case "Admin":
+      case UserRoleEnum.ADMIN:
         query = {};
         break;
       default:
