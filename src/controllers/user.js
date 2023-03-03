@@ -1,5 +1,11 @@
-const VerifyUserService = require("../services/verify-user");
+// Models
 const User = require("../models/user");
+
+// Services
+const VerifyUserService = require("../services/verify-user");
+
+// Utils
+const { customErrorHandler } = require("../utils/handle-error");
 
 module.exports = {
   userLogin: async (req, res) => {
@@ -8,6 +14,11 @@ module.exports = {
         req.body.email,
         req.body.password
       );
+
+      if (user.enabled === false) {
+        customErrorHandler("User account is disabled", 403);
+      }
+
       const token = await user.generateAuthToken();
       res.send({ success: true, data: { token } });
     } catch (error) {

@@ -1,4 +1,7 @@
+// Models
 const User = require("../models/user");
+
+// Utils
 const ErrorHandler = require("../utils/handle-error");
 const { UserRoleEnum } = require("../utils/common/enum");
 

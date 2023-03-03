@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const { customErrorHandler } = require("../utils/handle-error");
 
 module.exports = {
   userAuthentication: async (req, res, next) => {
@@ -34,8 +35,12 @@ module.exports = {
         _id: decoded._id,
         "tokens.token": authToken,
       });
-      if (!user || user.enabled === false) {
-        throw new Error();
+
+      if (!user) {
+        customErrorHandler("", 404);
+      }
+      if (user.enabled === false) {
+        customErrorHandler("User account is disabled", 403);
       }
 
       req.token = authToken;

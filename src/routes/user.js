@@ -1,7 +1,10 @@
+// Dependencies
 const express = require("express");
+
+// Middlewares
 const auth = require("../middlewares/auth");
 
-// Import model
+// Controllers
 const UserController = require("../controllers/user");
 
 const router = express.Router();

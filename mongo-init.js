@@ -1,15 +1,4 @@
-// db.createUser({
-//   user: "admin",
-//   pwd: "admin",
-//   roles: [
-//     {
-//       role: "readWrite",
-//       db: "book-management",
-//     },
-//   ],
-// });
-
-// db.auth("admin", "admin");
+// Mongodb init files
 db = db.getSiblingDB("book-management");
 
 db.createCollection("users");

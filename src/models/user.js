@@ -1,3 +1,4 @@
+// Dependencies
 const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
@@ -55,7 +56,7 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Remove certain datas from JSON file
+// Remove sensitive datas from user JSON file
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;

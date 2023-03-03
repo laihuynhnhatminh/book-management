@@ -1,10 +1,11 @@
+// Dependencies
 const express = require("express");
 require("dotenv").config();
 
 // Init Db
 require("./db/mongoose")();
 
-// Routers
+// Routes
 const userRoutes = require("./routes/user");
 const bookRoutes = require("./routes/book");
 
