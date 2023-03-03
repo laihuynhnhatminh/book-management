@@ -1,13 +1,15 @@
 ---
 
-_About The Project_
-This project is a simple book management project containing API to interact (basic CRUD) with books management website.
+**ABOUT THIS PROJECT**:
 
-_Build With_
-Express
-MongoDB - Mongoose
+- This project is a simple book management project containing API to interact (basic CRUD) with books management website.
 
-_GETTING START_
+**BUILD WITH**:
+
+- Express
+- MongoDB - Mongoose
+
+**GETTING START**
 Installing dependencies:
 
 ```
