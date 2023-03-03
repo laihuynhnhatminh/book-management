@@ -57,7 +57,8 @@ Books URI query parameters:
 ```
 limit - number of books to displayed (default 10)
 skip - number of books to skip (default 0)
-sortBy -  number of books to sort by certain field (author, title) - example GET /books?sortBy=author_asc => return list of books ordered in ascending order by author field
+sortBy -  number of books to sort by certain field (author, title)
+For example GET /books?sortBy=author_asc => return list of books ordered in ascending order by author field
 title - query books by title
 author - query books by author
 enabled - query books by whether they are enabled or not
