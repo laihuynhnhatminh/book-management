@@ -1,8 +1,16 @@
-// import Models
+// Models
 const Book = require("../models/book");
+
+// Services
 const GetBookService = require("../services/get-book");
 const VerifyUserService = require("../services/verify-user");
+
+// Utils
 const Utils = require("../utils/utils");
+const {
+  nonStringBookFilters,
+  commonFilters,
+} = require("../utils/common/filters");
 
 module.exports = {
   createNewBook: async (req, res) => {
@@ -72,19 +80,21 @@ module.exports = {
     const sort = {};
     // Update sort and filters from query
     Object.keys(req.query).forEach((k) => {
-      if (k === "sortBy") {
-        const parts = req.query.sortBy.split("_");
-        sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
-      }
-      if (k !== "limit" || k !== "skip" || k !== "sortBy") {
-        if (k === "enabled") {
-          filters[k] = filters[k] === "true" ? true : false;
-        } else {
-          filters[k] = Utils.toLowerCaseFilter(req.query[k]);
+      if (req.query[k]) {
+        if (k === "sortBy") {
+          const parts = req.query.sortBy.split("_");
+          sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+        }
+        if (!commonFilters.includes(k)) {
+          if (nonStringBookFilters.includes(k)) {
+            filters[k] = req.query[k] === "true" ? true : false;
+          } else {
+            filters[k] = Utils.toLowerCaseFilter(req.query[k]);
+          }
         }
       }
     });
-    console.log(filters);
+
     try {
       const books = await GetBookService.getBookList(
         req,

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 
-const { PASSWORD_REGEX } = require("../utils/common/constant");
+const { PASSWORD_REGEX } = require("../utils/common/regex");
 
 const userSchema = new mongoose.Schema({
   email: {

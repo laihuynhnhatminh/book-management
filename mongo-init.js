@@ -52,11 +52,11 @@ db.users.insertMany([
 db.roles.insertMany([
   {
     _id: "1",
-    role: "Admin",
+    name: "Admin",
   },
   {
     _id: "2",
-    role: "User",
+    name: "User",
   },
 ]);
 

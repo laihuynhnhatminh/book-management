@@ -28,8 +28,8 @@ module.exports = {
     }
 
     return Book.find(query, null, {
-      limit: req.query.limit,
-      skip: req.query.skip,
+      limit: req.query.limit || 10,
+      skip: req.query.skip || 0,
       sort,
     });
   },
@@ -46,7 +46,7 @@ module.exports = {
         };
         break;
       case UserRoleEnum.ADMIN:
-        query = {};
+        query = { ...query };
         break;
       default:
         query = { ...query, enabled: true };
