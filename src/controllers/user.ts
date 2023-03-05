@@ -1,8 +1,8 @@
-import { Request, Response } from 'express-serve-static-core';
+import { Request, Response } from 'express';
 import { User } from '../models/user';
 
 // Services
-import { verifyUser } from '../services/verify-user';
+import { verifyUserService } from '../services/verify-user';
 
 // Utils
 
@@ -29,7 +29,7 @@ class UserController {
 
 	async getUserProfile(req: Request, res: Response) {
 		try {
-			await verifyUser.isGuest(req, res);
+			await verifyUserService.isGuest(req, res);
 			res.send({
 				success: true,
 				data: { user: req.user, token: req.authToken }
@@ -41,3 +41,5 @@ class UserController {
 		}
 	}
 }
+
+export const userController = new UserController();

@@ -6,7 +6,7 @@ import { User } from '../models/user';
 // Utils
 import { UserRoleEnum } from '../utils/common/enum';
 
-class VerifyUser {
+class VerifyUserService {
 	public async checkUserRole(req: Request, res: Response) {
 		if (!req.user) {
 			return UserRoleEnum.GUEST;
@@ -43,4 +43,4 @@ class VerifyUser {
 	}
 }
 
-export const verifyUser = new VerifyUser();
+export const verifyUserService = new VerifyUserService();

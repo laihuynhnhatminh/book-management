@@ -1,6 +1,6 @@
 // Dependencies
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+import jsonwebtoken from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,7 +12,7 @@ interface IJWTPayload {
 // Models
 import { User } from '../models/user';
 
-class handleAuthentication {
+class HandleAuthentication {
 	public async userAuthentication(
 		req: Request,
 		res: Response,
@@ -23,7 +23,7 @@ class handleAuthentication {
 		}
 		try {
 			const authToken = req.header('Authorization')?.replace('Bearer ', '');
-			jwt.verify(
+			jsonwebtoken.verify(
 				authToken as string,
 				process.env.JWT_SECRET_KEY as string,
 				async (error, decoded) => {
@@ -58,6 +58,10 @@ class handleAuthentication {
 					next();
 				}
 			);
-		} catch (error: any) {}
+		} catch (error: any) {
+			res.status(500).send(error.message);
+		}
 	}
 }
+
+export const handleAuthentication = new HandleAuthentication();
