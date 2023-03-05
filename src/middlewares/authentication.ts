@@ -2,15 +2,15 @@
 import { Request, Response, NextFunction } from 'express';
 import jsonwebtoken from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
-
 dotenv.config();
+
+// Models
+import { User } from '../models/user';
+import { CustomError } from '../utils/classes/custom-error-class';
 
 interface IJWTPayload {
 	_id: string;
 }
-
-// Models
-import { User } from '../models/user';
 
 class HandleAuthentication {
 	public async userAuthentication(
@@ -21,12 +21,12 @@ class HandleAuthentication {
 		if (!req.headers.authorization) {
 			return next();
 		}
-		try {
-			const authToken = req.header('Authorization')?.replace('Bearer ', '');
-			jsonwebtoken.verify(
-				authToken as string,
-				process.env.JWT_SECRET_KEY as string,
-				async (error, decoded) => {
+		const authToken = req.header('Authorization')?.replace('Bearer ', '');
+		jsonwebtoken.verify(
+			authToken as string,
+			process.env.JWT_SECRET_KEY as string,
+			async (error, decoded) => {
+				try {
 					if (error) {
 						const user = await User.findOne({
 							'tokens.token': authToken
@@ -36,9 +36,9 @@ class HandleAuthentication {
 								(token) => token.token !== authToken
 							);
 							await user.save();
-							throw new Error('Token expired');
+							throw new CustomError('Token Expired', 401);
 						}
-						throw new Error('No such User exist');
+						throw new CustomError('Fail To Authenticate', 401);
 					}
 					const userId = decoded as IJWTPayload;
 
@@ -46,21 +46,20 @@ class HandleAuthentication {
 						_id: userId._id
 					});
 
-					if (!user) {
-						throw new Error('User not found');
-					}
-					if (user.enabled === false) {
-						throw new Error('User disabled');
+					if (!user || user.enabled === false) {
+						throw new CustomError('Fail To Authenticate', 401);
 					}
 
 					req.authToken = authToken;
 					req.user = user;
 					next();
+				} catch (error: any) {
+					res
+						.status(error.errorCode | 500)
+						.send({ success: false, message: error.message });
 				}
-			);
-		} catch (error: any) {
-			res.status(500).send(error.message);
-		}
+			}
+		);
 	}
 }
 

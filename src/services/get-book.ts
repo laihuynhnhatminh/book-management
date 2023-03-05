@@ -1,5 +1,9 @@
+// Lib Interfaces
 import { Request, Response } from 'express';
-import { Book } from '../models/book';
+import { Document, Query } from 'mongoose';
+
+// Custom Interfaces, Enums, Models
+import { Book, IBook } from '../models/book';
 import { IBookQuery } from '../interfaces/book-query';
 import { UserRoleEnum } from '../utils/common/enum';
 
@@ -10,18 +14,13 @@ class GetBookService {
 		filters: IBookQuery,
 		sort: { [key: string]: number },
 		userRole: string
-	): Promise<any> {
-		console.log(userRole);
+	): Promise<Query<any, Document<IBook>>> {
 		let query = {};
 		switch (userRole) {
 			case UserRoleEnum.USER:
 				query = {
-					$and: [
-						{
-							$or: [{ user_id: req.user._id }, { enabled: true }],
-							...filters
-						}
-					]
+					$or: [{ user_id: req.user?._id }, { enabled: true }],
+					...filters
 				};
 				break;
 			case UserRoleEnum.ADMIN:
@@ -32,7 +31,7 @@ class GetBookService {
 			default:
 				query = {
 					...filters,
-					enabled: true
+					enabled: filters.enabled === false ? null : true
 				};
 		}
 
@@ -41,12 +40,19 @@ class GetBookService {
 			.skip(+(req.query.skip as string));
 	}
 
-	async getSpecificBook(req: Request, res: Response, userRole: string) {
+	async getSpecificBook(
+		req: Request,
+		res: Response,
+		userRole: string
+	): Promise<Query<any, Document<IBook>>> {
 		let query: any = { _id: req.params.id };
 		switch (userRole) {
 			case UserRoleEnum.USER:
 				query = {
-					$and: [{ $or: [{ user_id: req.user._id }, { enabled: true }] }, query]
+					$and: [
+						{ $or: [{ user_id: req.user?._id }, { enabled: true }] },
+						query
+					]
 				};
 				break;
 			case UserRoleEnum.ADMIN:

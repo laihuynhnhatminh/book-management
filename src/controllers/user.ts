@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { verifyUserService } from '../services/verify-user';
 
 // Utils
+import { CustomError } from '../utils/classes/custom-error-class';
 
 class UserController {
 	async userLogin(req: Request, res: Response) {
@@ -15,7 +16,7 @@ class UserController {
 			);
 
 			if (user.enabled === false) {
-				throw new Error('Please authenticate');
+				throw new CustomError('Please Authenticate', 401);
 			}
 
 			const token = await user.generateAuthToken();
@@ -23,7 +24,7 @@ class UserController {
 		} catch (error: any) {
 			res
 				.status(error.code || 400)
-				.send({ success: false, data: { error: error.message } });
+				.send({ success: false, message: error.message });
 		}
 	}
 
@@ -37,7 +38,7 @@ class UserController {
 		} catch (error: any) {
 			res
 				.status(error.code || 400)
-				.send({ success: false, data: { error: error.message } });
+				.send({ success: false, message: error.message });
 		}
 	}
 }

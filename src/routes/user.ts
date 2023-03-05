@@ -1,6 +1,10 @@
+// Dependencies
 import express from 'express';
 
+// Controllers
 import { userController } from '../controllers/user';
+
+// Middlewares
 import { handleAuthentication } from '../middlewares/authentication';
 
 const router = express.Router();

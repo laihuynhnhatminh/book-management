@@ -5,6 +5,7 @@ import { User } from '../models/user';
 
 // Utils
 import { UserRoleEnum } from '../utils/common/enum';
+import { CustomError } from '../utils/classes/custom-error-class';
 
 class VerifyUserService {
 	public async checkUserRole(req: Request, res: Response) {
@@ -18,7 +19,7 @@ class VerifyUserService {
 
 	public async isGuest(req: Request, res: Response) {
 		if (!req.user) {
-			throw new Error('Please authenticate');
+			throw new CustomError('Please Authenticate', 401);
 		}
 	}
 

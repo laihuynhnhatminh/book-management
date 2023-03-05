@@ -46,7 +46,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
 		trim: true,
 		minlength: 8,
 		validate(value: string) {
-			if (!value.match(PASSWORD_REGEX)) throw new Error('Password is invalid');
+			if (!value.match(PASSWORD_REGEX))
+				throw new Error(
+					'Password must has at least one uppercase word and one number'
+				);
 		}
 	},
 	firstName: {

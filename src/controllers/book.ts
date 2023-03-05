@@ -16,8 +16,9 @@ import {
 	COMMON_QUERIES
 } from '../utils/common/book-filters';
 
-// Utils function
-import { toLowerCaseQuery } from '../utils/toLowerCaseQuery';
+// Utils
+import { toLowerCaseQuery } from '../utils/functions/lower-case-query';
+import { CustomError } from '../utils/classes/custom-error-class';
 
 class BookController {
 	public async createNewBook(req: Request, res: Response): Promise<void> {
@@ -25,7 +26,7 @@ class BookController {
 			await verifyUserService.isGuest(req, res);
 			const book = await new Book({
 				...req.body,
-				user_id: req.user._id
+				user_id: req.user?._id
 			}).save();
 
 			res.status(201).send({
@@ -33,7 +34,7 @@ class BookController {
 				data: { message: 'New book created successfully', book }
 			});
 		} catch (error: any) {
-			res.status(500).send({ success: false, data: { error: error.message } });
+			res.status(500).send({ success: false, message: error.message });
 		}
 	}
 
@@ -42,25 +43,27 @@ class BookController {
 			BOOK_PATCHABLE_FIELDS.includes(k)
 		);
 		if (!isValidEdition) {
-			throw new Error('Operation not valid');
+			throw new CustomError('Operation Not Valid');
 		}
 		try {
 			await verifyUserService.isGuest(req, res);
 			const book = await Book.findOneAndUpdate(
 				{
 					_id: req.params.id,
-					user_id: req.user._id
+					user_id: req.user?._id
 				},
 				req.body,
 				{ new: true }
 			);
 
 			if (!book) {
-				throw new Error('No book found');
+				throw new CustomError('No Book Found', 404);
 			}
 			res.send(book);
 		} catch (error: any) {
-			res.status(500).send({ success: false, data: { error: error.message } });
+			res
+				.status(error.errorCode | 400)
+				.send({ success: false, message: error.message });
 		}
 	}
 
@@ -95,7 +98,7 @@ class BookController {
 			);
 			res.send(books);
 		} catch (error: any) {
-			res.status(400).send({ success: false, data: { error: error.message } });
+			res.status(400).send({ success: false, message: error.message });
 		}
 	}
 
@@ -104,11 +107,11 @@ class BookController {
 		try {
 			const book = await getBookService.getSpecificBook(req, res, userRole);
 			if (!book) {
-				throw new Error('No book found');
+				throw new CustomError('No Book Found', 404);
 			}
 			res.send({ success: true, data: book });
 		} catch (error: any) {
-			res.status(400).send({ success: false, data: { error: error.message } });
+			res.status(400).send({ success: false, message: error.message });
 		}
 	}
 
@@ -117,15 +120,15 @@ class BookController {
 			await verifyUserService.isGuest(req, res);
 			const book = await Book.findByIdAndDelete({
 				_id: req.params.id,
-				user_id: req.user._id
+				user_id: req.user?._id
 			});
 
 			if (!book) {
-				throw new Error('No book found');
+				throw new CustomError('No Book Found', 404);
 			}
-			res.send({ success: true, data: { message: 'Delete successfully' } });
+			res.send({ success: true, message: 'Delete successfully' });
 		} catch (error: any) {
-			res.status(500).send({ success: false, data: { error: error.message } });
+			res.status(500).send({ success: false, message: error.message });
 		}
 	}
 }
