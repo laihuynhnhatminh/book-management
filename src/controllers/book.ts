@@ -1,26 +1,18 @@
-// Dependencies
 import { IBookQuery } from '../interfaces/book-query';
-
-// Models, Interface
 import { Request, Response } from 'express';
 import { Book } from '../models/book';
 
-// Services
 import { getBookService } from '../services/get-book';
 import { validateEditFieldService } from '../services/validate-edit-field';
 
-// Constant/Enum
 import {
   BOOK_NON_STRING_QUERIES,
   COMMON_QUERIES
 } from '../utils/common/book-filters';
 
-// Utils
 import { toLowerCaseQuery } from '../utils/functions/lower-case-query';
 import { SortOrder } from 'mongoose';
 import { UserRoleEnum } from '../utils/common/enum';
-
-// Error handling
 import CustomError from '../errors/custom-errors';
 
 class BookController {

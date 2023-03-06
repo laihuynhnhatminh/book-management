@@ -1,10 +1,5 @@
-// Dependencies
 import { Request, Response } from 'express';
-
-// Constants
 import { BOOK_PATCHABLE_FIELDS } from '../utils/common/book-filters';
-
-// Errors
 import CustomError from '../errors/custom-errors';
 
 class ValidateEditFieldService {

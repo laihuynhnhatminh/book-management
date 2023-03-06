@@ -1,8 +1,6 @@
-// Lib Interfaces
 import { Request, Response } from 'express';
 import { Document, Query, SortOrder } from 'mongoose';
 
-// Custom Interfaces, Enums, Models
 import { Book, IBook } from '../models/book';
 import { IBookQuery } from '../interfaces/book-query';
 import { UserRoleEnum } from '../utils/common/enum';

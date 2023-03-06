@@ -1,8 +1,6 @@
-// Models, Interface
 import { Request, Response } from 'express';
 import { User } from '../models/user';
 
-// Error handlers
 import CustomError from '../errors/custom-errors';
 
 class UserController {

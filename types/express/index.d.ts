@@ -1,4 +1,3 @@
-// Interfaces
 import { IUser } from '../../src/models/user';
 
 export {};

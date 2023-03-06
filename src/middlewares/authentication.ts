@@ -1,14 +1,10 @@
-// Dependencies
 import { Request, Response, NextFunction } from 'express';
 import jsonwebtoken from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-// Models
 import { User } from '../models/user';
 import { UserRoleEnum } from '../utils/common/enum';
-
-// Error handlers
 import CustomError from '../errors/custom-errors';
 interface IJWTPayload {
   _id: string;

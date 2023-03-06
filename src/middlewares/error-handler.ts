@@ -1,10 +1,7 @@
-// Interfaces
 import { NextFunction, Request, Response } from 'express';
 
-// Error handling
 import CustomError from '../errors/custom-errors';
 
-// @ts-ignore
 export const errorHandler = (
   err: any,
   _req: Request,
@@ -17,5 +14,5 @@ export const errorHandler = (
       .send({ success: false, errors: err.message });
   }
 
-  res.status(500).json({ errors: { message: 'Something went wrong' } });
+  return res.status(500).json({ errors: { message: 'Something went wrong' } });
 };

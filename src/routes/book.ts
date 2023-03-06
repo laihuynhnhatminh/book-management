@@ -1,7 +1,4 @@
-// Dependencies
 import express from 'express';
-
-// Controllers
 import { bookController } from '../controllers/book';
 
 const router = express.Router();

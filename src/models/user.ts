@@ -1,9 +1,7 @@
-// Dependencies
 import { Schema, model, Model, HydratedDocument } from 'mongoose';
 import validator from 'validator';
 import jsonwebtoken from 'jsonwebtoken';
 
-// Constants
 import { PASSWORD_REGEX } from '../utils/common/regex';
 import CustomError from '../errors/custom-errors';
 
