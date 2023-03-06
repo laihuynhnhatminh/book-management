@@ -91,5 +91,33 @@ db.books.insertMany([
 		author: 'Alexandre Dumas',
 		enabled: false,
 		user_id: ObjectId('63fdae3fa40d61c25b50ff9e')
+	},
+	{
+		_id: ObjectId('64016200b954eef4eecc9892'),
+		title: 'The Perfect Insider',
+		author: 'Hiroshi Mori',
+		enabled: false,
+		user_id: ObjectId('63fdae3fa40d61c25b50ff9e')
+	},
+	{
+		_id: ObjectId('64054bf08dc3b4b980a2fe49'),
+		title: 'The Perfect Outsider',
+		author: 'Hiroshi Mori',
+		enabled: true,
+		user_id: ObjectId('63fdad90a40d61c25b50ff9d')
+	},
+	{
+		_id: ObjectId('64054c0b8dc3b4b980a2fe53'),
+		title: 'A Certain Magical Index',
+		author: 'Kazuma Kamachi',
+		enabled: true,
+		user_id: ObjectId('63fdad90a40d61c25b50ff9d')
+	},
+	{
+		_id: ObjectId('64054c5a8dc3b4b980a2fe99'),
+		title: 'A Certain Scientific Railgun',
+		author: 'Kazuma Kamachi',
+		enabled: true,
+		user_id: ObjectId('63fdad90a40d61c25b50ff9d')
 	}
 ]);
