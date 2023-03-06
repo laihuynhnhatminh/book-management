@@ -1,3 +1,4 @@
+// Interfaces
 import { IUser } from '../../src/models/user';
 
 export {};
@@ -7,6 +8,7 @@ declare global {
     export interface Request {
       authToken?: string;
       user?: IUser;
+      userRole?: string;
     }
   }
 }

@@ -5,6 +5,7 @@ import jsonwebtoken from 'jsonwebtoken';
 
 // Constants
 import { PASSWORD_REGEX } from '../utils/common/regex';
+import CustomError from '../errors/custom-errors';
 
 export interface IUser {
   _id: Schema.Types.ObjectId;
@@ -15,7 +16,6 @@ export interface IUser {
   enabled: boolean;
   avatar_url?: string;
   role_id: string;
-  tokens: { token: string; _id: Schema.Types.ObjectId }[];
 }
 
 interface IUserMethods extends Model<IUser> {
@@ -36,8 +36,9 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     required: true,
     trim: true,
     lowercase: true,
-    validator(value: string) {
-      if (!validator.isEmail(value)) throw new Error('Email is invalid');
+    validate(value: string) {
+      if (!validator.isEmail(value))
+        throw new CustomError('Email is invalid', 403);
     }
   },
   password: {
@@ -47,8 +48,9 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     minlength: 8,
     validate(value: string) {
       if (!value.match(PASSWORD_REGEX))
-        throw new Error(
-          'Password must has at least one uppercase word and one number'
+        throw new CustomError(
+          'Password must has at least one uppercase word and one number',
+          403
         );
     }
   },
@@ -70,22 +72,13 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   role_id: {
     type: String,
     required: true
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true
-      }
-    }
-  ]
+  }
 });
 
 // Remove sensitive datas from user JSON file
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
-  delete userObject.tokens;
   delete userObject.role_id;
   delete userObject.enabled;
 
@@ -99,8 +92,6 @@ userSchema.method('generateAuthToken', async function (): Promise<string> {
     process.env.JWT_SECRET_KEY as string,
     { expiresIn: '1h' }
   );
-  this.tokens = this.tokens.concat({ token });
-  await this.save();
   return token;
 });
 
@@ -109,12 +100,8 @@ userSchema.static(
   'findByCredential',
   async function findByCredential(email: string, password: string) {
     const user = await User.findOne({ email });
-    if (!user) {
-      throw new Error('Unable to login');
-    }
-
-    if (user.password !== password) {
-      throw new Error('Unable to login');
+    if (!user || user.password !== password) {
+      throw new CustomError('Wrong username or password', 403);
     }
     return user;
   }

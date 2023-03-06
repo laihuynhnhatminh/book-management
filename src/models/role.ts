@@ -1,3 +1,4 @@
+// Dependencies
 import { model, Schema } from 'mongoose';
 
 export interface IUserRole {
