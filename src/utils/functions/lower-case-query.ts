@@ -1,3 +1,3 @@
 export function toLowerCaseQuery(value: string) {
-	return { $regex: value, $options: 'i' };
+  return { $regex: value, $options: 'i' };
 }

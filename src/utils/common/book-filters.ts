@@ -1,9 +1,9 @@
 // Updatable book fields
 export const BOOK_PATCHABLE_FIELDS = [
-	'enabled',
-	'author',
-	'title',
-	'description'
+  'enabled',
+  'author',
+  'title',
+  'description'
 ];
 
 // Queries for getting books

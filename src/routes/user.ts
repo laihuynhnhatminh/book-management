@@ -12,9 +12,9 @@ const router = express.Router();
 router.post('/users/login', userController.userLogin);
 
 router.get(
-	'/users/me',
-	handleAuthentication.userAuthentication,
-	userController.getUserProfile
+  '/users/me',
+  handleAuthentication.userAuthentication,
+  userController.getUserProfile
 );
 
 export { router };
