@@ -3,7 +3,8 @@ import validator from 'validator';
 import jsonwebtoken from 'jsonwebtoken';
 
 import { PASSWORD_REGEX } from '../utils/common/regex';
-import CustomError from '../errors/custom-errors';
+import UnauthorizeError from '../errors/unauthorize-error';
+import BadRequestError from '../errors/bad-request-error';
 
 export interface IUser {
   _id: Schema.Types.ObjectId;
@@ -36,7 +37,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     lowercase: true,
     validate(value: string) {
       if (!validator.isEmail(value))
-        throw new CustomError('Email is invalid', 403);
+        throw new BadRequestError('Email is invalid');
     }
   },
   password: {
@@ -46,9 +47,8 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     minlength: 8,
     validate(value: string) {
       if (!value.match(PASSWORD_REGEX))
-        throw new CustomError(
-          'Password must has at least one uppercase word and one number',
-          403
+        throw new BadRequestError(
+          'Password must has at least one uppercase word and one number'
         );
     }
   },
@@ -99,7 +99,7 @@ userSchema.static(
   async function findByCredential(email: string, password: string) {
     const user = await User.findOne({ email });
     if (!user || user.password !== password) {
-      throw new CustomError('Wrong username or password', 403);
+      throw new UnauthorizeError('Wrong username or password');
     }
     return user;
   }

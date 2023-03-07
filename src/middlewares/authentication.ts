@@ -5,7 +5,8 @@ dotenv.config();
 
 import { User } from '../models/user';
 import { UserRoleEnum } from '../utils/common/enum';
-import CustomError from '../errors/custom-errors';
+import NotFoundError from '../errors/not-found-error';
+import UnauthorizeError from '../errors/unauthorize-error';
 interface IJWTPayload {
   _id: string;
 }
@@ -31,16 +32,10 @@ class HandleAuthentication {
       _id: userId._id
     });
 
-    if (!user) {
-      throw new CustomError('No User Found', 404);
+    if (user && user.enabled === true) {
+      req.authToken = authToken;
+      req.user = user;
     }
-
-    if (user.enabled === false) {
-      throw new CustomError('User Account Disabled', 401);
-    }
-
-    req.authToken = authToken;
-    req.user = user;
     next();
   }
 
@@ -49,6 +44,7 @@ class HandleAuthentication {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    req.userRole = UserRoleEnum.GUEST;
     if (req.user) {
       const user = await User.aggregate([
         {
@@ -63,11 +59,8 @@ class HandleAuthentication {
         { $unwind: '$role' }
       ]).match({ _id: req.user._id });
       req.userRole = user[0].role.name;
-      next();
-    } else {
-      req.userRole = UserRoleEnum.GUEST;
-      next();
     }
+    next();
   }
 }
 

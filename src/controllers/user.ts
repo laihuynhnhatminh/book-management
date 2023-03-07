@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { User } from '../models/user';
 
-import CustomError from '../errors/custom-errors';
+import UnauthorizeError from '../errors/unauthorize-error';
 
 class UserController {
   async userLogin(req: Request, res: Response): Promise<void> {
     const user = await User.findByCredential(req.body.email, req.body.password);
 
     if (user.enabled === false) {
-      throw new CustomError('No Book Found', 401);
+      throw new UnauthorizeError();
     }
 
     const token = await user.generateAuthToken();

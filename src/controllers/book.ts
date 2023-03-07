@@ -1,28 +1,15 @@
-import { IBookQuery } from '../interfaces/book-query';
 import { Request, Response } from 'express';
-import { Book } from '../models/book';
-
-import { getBookService } from '../services/get-book';
-import { validateEditFieldService } from '../services/validate-edit-field';
-
-import {
-  BOOK_NON_STRING_QUERIES,
-  COMMON_QUERIES
-} from '../utils/common/book-filters';
-
-import { toLowerCaseQuery } from '../utils/functions/lower-case-query';
 import { SortOrder } from 'mongoose';
-import { UserRoleEnum } from '../utils/common/enum';
-import CustomError from '../errors/custom-errors';
+import { Book } from '../models/book';
+import { IBookQuery } from '../interfaces/book-query';
+
+import { bookService } from '../services/book-service';
+import { validateBookService } from '../validation/validate-book';
+import { validateUser } from '../validation/validate-user';
 
 class BookController {
-  public async createNewBook(
-    req: Request,
-    res: Response
-  ): Promise<Response | void> {
-    if (req.userRole === UserRoleEnum.GUEST) {
-      throw new CustomError('Please authenticate', 401);
-    }
+  public async createNewBook(req: Request, res: Response): Promise<void> {
+    validateUser.ensureLoggedIn(req);
     const book = await new Book({
       ...req.body,
       user_id: req.user?._id
@@ -34,88 +21,57 @@ class BookController {
     });
   }
 
-  public async editSpecificBook(
-    req: Request,
-    res: Response
-  ): Promise<Response | void> {
-    if (req.userRole === UserRoleEnum.GUEST) {
-      throw new CustomError('Please authenticate', 401);
-    }
-    validateEditFieldService.isValidateBookEditFields(req, res);
+  public async editSpecificBook(req: Request, res: Response): Promise<void> {
+    validateUser.ensureLoggedIn(req);
+    validateBookService.ensureValidEditFields(req, res);
 
-    const book = await Book.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        user_id: req.user?._id
-      },
-      req.body,
-      { new: true }
+    const book = await bookService.editSpecificBook(
+      req.params.id,
+      req.user?._id,
+      req.body
     );
+    validateBookService.ensureValidBook(book, req.params.id);
 
-    if (!book) {
-      throw new CustomError('No Book Found', 404);
-    }
     res.send({ success: true, data: { book } });
   }
 
   public async getBooks(req: Request, res: Response): Promise<void> {
-    const filters: IBookQuery = {};
-    const sort: { [key: string]: SortOrder } | undefined = {};
-    // Update sort and filters from query
-    Object.keys(req.query).forEach((k) => {
-      if (req.query[k]) {
-        if (k === 'sortBy') {
-          const parts = (req.query.sortBy as string).split('_');
-          sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
-        }
-        if (!COMMON_QUERIES.includes(k)) {
-          if (BOOK_NON_STRING_QUERIES.includes(k)) {
-            filters[k] = req.query[k] === 'true' ? true : false;
-          } else {
-            filters[k] = toLowerCaseQuery(req.query[k] as string);
-          }
-        }
-      }
-    });
+    const filters: IBookQuery = bookService.getFilters(req);
+    const sort: { [key: string]: SortOrder } | undefined =
+      bookService.getSort(req);
 
-    const books = await getBookService.getBookList(
-      req,
-      res,
+    const books = await bookService.getBookList(
+      req.user?._id,
       filters,
+      req.query.limit as string,
+      req.query.skip as string,
       sort,
       req.userRole as string
     );
-    if (!books) {
-      throw new CustomError('No Book Found', 404);
-    }
 
     res.send({ success: true, data: { books } });
   }
 
   public async getSpecificBook(req: Request, res: Response): Promise<void> {
-    const book = await getBookService.getSpecificBook(
-      req,
-      res,
+    const book = await bookService.getSpecificBook(
+      req.params.id,
+      req.user?._id,
       req.userRole as string
     );
     if (!book) {
-      throw new CustomError('No Book Found', 404);
     }
     res.send({ success: true, data: { book } });
   }
 
   public async deleteSpecificBook(req: Request, res: Response): Promise<void> {
-    if (req.userRole === UserRoleEnum.GUEST) {
-      throw new CustomError('Please authenticate', 401);
-    }
-    const book = await Book.findByIdAndDelete({
-      _id: req.params.id,
-      user_id: req.user?._id
-    });
+    validateUser.ensureLoggedIn(req);
 
-    if (!book) {
-      throw new CustomError('No Book Found', 404);
-    }
+    const book = await bookService.deleteSpecificBook(
+      req.params.id,
+      req.user?._id
+    );
+    validateBookService.ensureValidBook(book, req.params.id);
+
     res.send({ success: true, message: 'Delete successfully' });
   }
 }

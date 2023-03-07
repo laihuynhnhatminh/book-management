@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-
-import CustomError from '../errors/custom-errors';
+import DomainError from '../errors/domain-error';
 
 export const errorHandler = (
   err: any,
@@ -8,11 +7,11 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  if (err instanceof CustomError) {
+  if (err instanceof DomainError) {
     return res
       .status(err.statusCode)
       .send({ success: false, errors: err.message });
   }
-
+  console.log(err);
   return res.status(500).json({ errors: { message: 'Something went wrong' } });
 };
