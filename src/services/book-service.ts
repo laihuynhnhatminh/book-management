@@ -12,7 +12,7 @@ import {
 import { toLowerCaseQuery } from '../utils/functions/lower-case-query';
 
 class BookService {
-  public async editSpecificBook(
+  public async update(
     bookId: string,
     userId: Schema.Types.ObjectId | undefined,
     updatedBook: IBook
@@ -27,7 +27,7 @@ class BookService {
     );
   }
 
-  public async deleteSpecificBook(
+  public async delete(
     bookId: string,
     userId: Schema.Types.ObjectId | undefined
   ): Promise<Document<any, any, IBook> | null> {
@@ -37,11 +37,11 @@ class BookService {
     });
   }
 
-  public async getBookList(
+  public async findAll(
     userId: Schema.Types.ObjectId | undefined,
     filters: IBookQuery,
-    limit: string,
-    skip: string,
+    limit: number | undefined,
+    skip: number | undefined,
     sort: { [key: string]: SortOrder } | undefined,
     userRole: string
   ): Promise<Query<any, Document<IBook>>> {
@@ -64,10 +64,13 @@ class BookService {
           enabled: filters.enabled === false ? null : true
         };
     }
-    return Book.find(query, null).sort(sort).limit(+limit).skip(+skip);
+    return Book.find(query, null)
+      .sort(sort)
+      .limit(limit || 10)
+      .skip(skip || 0);
   }
 
-  public async getSpecificBook(
+  public async find(
     bookId: string,
     userId: Schema.Types.ObjectId | undefined,
     userRole: string
@@ -88,23 +91,28 @@ class BookService {
     return Book.findOne(query);
   }
 
-  public getFilters(req: Request): IBookQuery {
+  public getFilters(query: Request['query']): IBookQuery {
     const filters: IBookQuery = {};
-    Object.keys(req.query).forEach((k) => {
-      if (!COMMON_QUERIES.includes(k) && req.query[k]) {
-        if (BOOK_NON_STRING_QUERIES.includes(k))
-          filters[k] = req.query[k] === 'true' ? true : false;
-        else filters[k] = toLowerCaseQuery(req.query[k] as string);
+    Object.keys(query).forEach((k) => {
+      if (
+        !COMMON_QUERIES.includes(k) &&
+        query[k] &&
+        BOOK_NON_STRING_QUERIES.includes(k)
+      ) {
+        filters[k] = query[k] === 'true' ? true : false;
       }
+      filters[k] = toLowerCaseQuery(query[k] as string);
     });
     return filters;
   }
 
-  public getSort(req: Request): { [key: string]: SortOrder } | undefined {
+  public getSort(
+    query: Request['query']
+  ): { [key: string]: SortOrder } | undefined {
     const sort: { [key: string]: SortOrder } | undefined = {};
-    Object.keys(req.query).forEach((k) => {
-      if (req.query[k] && k === 'sortBy') {
-        const parts = (req.query.sortBy as string).split('_');
+    Object.keys(query).forEach((k) => {
+      if (query[k] && k === 'sortBy') {
+        const parts = (query.sortBy as string).split('_');
         sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
       }
     });
