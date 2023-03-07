@@ -5,8 +5,6 @@ dotenv.config();
 
 import { User } from '../models/user';
 import { UserRoleEnum } from '../utils/common/enum';
-import NotFoundError from '../errors/not-found-error';
-import UnauthorizeError from '../errors/unauthorize-error';
 interface IJWTPayload {
   _id: string;
 }
@@ -14,7 +12,7 @@ interface IJWTPayload {
 class HandleAuthentication {
   public async userAuthentication(
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ): Promise<Response | void> {
     const authToken = req.header('Authorization')?.replace('Bearer ', '');
@@ -41,7 +39,7 @@ class HandleAuthentication {
 
   public async getUserRole(
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ): Promise<void> {
     req.userRole = UserRoleEnum.GUEST;

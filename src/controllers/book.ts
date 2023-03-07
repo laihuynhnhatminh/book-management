@@ -8,8 +8,8 @@ import { bookValidation } from '../validation/book-validation';
 import { authValidation } from '../validation/auth-validation';
 
 class BookController {
-  public async createNewBook(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req);
+  public async create(req: Request, res: Response): Promise<void> {
+    authValidation.ensureLoggedIn(req?.userRole, req?.user);
     const book = await new Book({
       ...req.body,
       user_id: req.user?._id
@@ -21,8 +21,8 @@ class BookController {
     });
   }
 
-  public async editSpecificBook(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req);
+  public async update(req: Request, res: Response): Promise<void> {
+    authValidation.ensureLoggedIn(req?.userRole, req?.user);
     bookValidation.ensureValidEditFields(req, res);
 
     const book = await bookService.update(
@@ -30,16 +30,12 @@ class BookController {
       req.user?._id,
       req.body
     );
-    if (!book) {
-      res
-        .status(404)
-        .send(`The book with id ${req.params.id} could not be found`);
-    }
+    bookValidation.ensureValidBook(book, req, res);
 
-    res.send({ success: true, data: { book } });
+    if (book) res.send({ success: true, data: { book } });
   }
 
-  public async getBooks(req: Request, res: Response): Promise<void> {
+  public async findAll(req: Request, res: Response): Promise<void> {
     const filters: IBookQuery = bookService.getFilters(req.query);
     const sort: { [key: string]: SortOrder } | undefined = bookService.getSort(
       req.query
@@ -57,32 +53,24 @@ class BookController {
     res.send({ success: true, data: { books } });
   }
 
-  public async getSpecificBook(req: Request, res: Response): Promise<void> {
+  public async find(req: Request, res: Response): Promise<void> {
     const book = await bookService.find(
       req.params.id,
       req.user?._id,
       req.userRole as string
     );
-    if (!book) {
-      res
-        .status(404)
-        .send(`The book with id ${req.params.id} could not be found`);
-    }
+    bookValidation.ensureValidBook(book, req, res);
 
-    res.send({ success: true, data: { book } });
+    if (book) res.send({ success: true, data: { book } });
   }
 
-  public async deleteSpecificBook(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req);
+  public async delete(req: Request, res: Response): Promise<void> {
+    authValidation.ensureLoggedIn(req?.userRole, req?.user);
 
     const book = await bookService.delete(req.params.id, req.user?._id);
-    if (!book) {
-      res
-        .status(404)
-        .send(`The book with id ${req.params.id} could not be found`);
-    }
+    bookValidation.ensureValidBook(book, req, res);
 
-    res.send({ success: true, message: 'Delete successfully' });
+    if (book) res.send({ success: true, message: 'Delete successfully' });
   }
 }
 

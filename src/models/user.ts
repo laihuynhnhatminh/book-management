@@ -22,7 +22,7 @@ interface IUserMethods extends Model<IUser> {
 }
 
 interface UserModel extends Model<IUser, {}, IUserMethods> {
-  findByCredential(
+  login(
     email: string,
     password: string
   ): Promise<HydratedDocument<IUser, IUserMethods>>;
@@ -73,7 +73,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   }
 });
 
-// Remove sensitive datas from user JSON file
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
@@ -83,7 +82,6 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
-// Generate jwt token
 userSchema.method('generateAuthToken', async function (): Promise<string> {
   const token = jsonwebtoken.sign(
     { _id: this._id.toString() },
@@ -93,13 +91,15 @@ userSchema.method('generateAuthToken', async function (): Promise<string> {
   return token;
 });
 
-// Get user by credentials
 userSchema.static(
-  'findByCredential',
-  async function findByCredential(email: string, password: string) {
+  'login',
+  async function login(email: string, password: string) {
     const user = await User.findOne({ email });
     if (!user || user.password !== password) {
       throw new UnauthorizeError('Wrong username or password');
+    }
+    if (!user.enabled) {
+      throw new UnauthorizeError();
     }
     return user;
   }
