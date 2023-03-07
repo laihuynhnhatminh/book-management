@@ -5,7 +5,7 @@ import { IBook } from '../models/book';
 import NotFoundError from '../errors/not-found-error';
 import BadRequestError from '../errors/bad-request-error';
 
-class ValidateBookService {
+class ValidateBook {
   public ensureValidEditFields(req: Request, res: Response): void {
     const isValidEdition = Object.keys(req.body).every((k) =>
       BOOK_PATCHABLE_FIELDS.includes(k)
@@ -25,4 +25,4 @@ class ValidateBookService {
   }
 }
 
-export const validateBookService = new ValidateBookService();
+export const validateBook = new ValidateBook();

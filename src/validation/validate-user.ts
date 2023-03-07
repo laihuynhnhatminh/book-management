@@ -2,7 +2,7 @@ import { Request } from 'express';
 import UnauthorizeError from '../errors/unauthorize-error';
 import { UserRoleEnum } from '../utils/common/enum';
 
-class ValidateUserService {
+class ValidateUser {
   public ensureLoggedIn(req: Request) {
     if (req.userRole === UserRoleEnum.GUEST) {
       throw new UnauthorizeError('Please authenticate');
@@ -10,4 +10,4 @@ class ValidateUserService {
   }
 }
 
-export const validateUser = new ValidateUserService();
+export const validateUser = new ValidateUser();

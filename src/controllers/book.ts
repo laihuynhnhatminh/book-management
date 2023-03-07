@@ -4,7 +4,7 @@ import { Book } from '../models/book';
 import { IBookQuery } from '../interfaces/book-query';
 
 import { bookService } from '../services/book-service';
-import { validateBookService } from '../validation/validate-book';
+import { validateBook } from '../validation/validate-book';
 import { validateUser } from '../validation/validate-user';
 
 class BookController {
@@ -23,14 +23,14 @@ class BookController {
 
   public async editSpecificBook(req: Request, res: Response): Promise<void> {
     validateUser.ensureLoggedIn(req);
-    validateBookService.ensureValidEditFields(req, res);
+    validateBook.ensureValidEditFields(req, res);
 
     const book = await bookService.editSpecificBook(
       req.params.id,
       req.user?._id,
       req.body
     );
-    validateBookService.ensureValidBook(book, req.params.id);
+    validateBook.ensureValidBook(book, req.params.id);
 
     res.send({ success: true, data: { book } });
   }
@@ -70,7 +70,7 @@ class BookController {
       req.params.id,
       req.user?._id
     );
-    validateBookService.ensureValidBook(book, req.params.id);
+    validateBook.ensureValidBook(book, req.params.id);
 
     res.send({ success: true, message: 'Delete successfully' });
   }
