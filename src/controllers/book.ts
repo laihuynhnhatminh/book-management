@@ -9,10 +9,10 @@ import { authValidation } from '../validation/auth-validation';
 
 class BookController {
   public async create(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req?.userRole, req?.user);
+    authValidation.ensureLoggedIn(req.userRole, req.user);
     const book = await new Book({
       ...req.body,
-      user_id: req.user?._id
+      user_id: req.user._id
     }).save();
 
     res.status(201).send({
@@ -22,17 +22,20 @@ class BookController {
   }
 
   public async update(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req?.userRole, req?.user);
+    authValidation.ensureLoggedIn(req.userRole, req.user);
     bookValidation.ensureValidEditFields(req, res);
 
     const book = await bookService.update(
       req.params.id,
-      req.user?._id,
+      req.user._id,
       req.body
     );
-    bookValidation.ensureValidBook(book, req, res);
 
-    if (book) res.send({ success: true, data: { book } });
+    if (!book) {
+      bookValidation.sendBookNotFound(req, res)
+    } else {
+      bookValidation.sendSuccess(res, book)
+    }
   }
 
   public async findAll(req: Request, res: Response): Promise<void> {
@@ -42,12 +45,12 @@ class BookController {
     );
 
     const books = await bookService.findAll(
-      req.user?._id,
+      req.user._id,
       filters,
       parseInt(req.query.limit as string),
       parseInt(req.query.skip as string),
       sort,
-      req.userRole as string
+      req.userRole
     );
 
     res.send({ success: true, data: { books } });
@@ -56,21 +59,27 @@ class BookController {
   public async find(req: Request, res: Response): Promise<void> {
     const book = await bookService.find(
       req.params.id,
-      req.user?._id,
-      req.userRole as string
+      req.user._id,
+      req.userRole
     );
-    bookValidation.ensureValidBook(book, req, res);
 
-    if (book) res.send({ success: true, data: { book } });
+    if (!book) {
+      bookValidation.sendBookNotFound(req, res)
+    } else {
+      bookValidation.sendSuccess(res, book)
+    }
   }
 
   public async delete(req: Request, res: Response): Promise<void> {
-    authValidation.ensureLoggedIn(req?.userRole, req?.user);
+    authValidation.ensureLoggedIn(req.userRole, req.user);
 
-    const book = await bookService.delete(req.params.id, req.user?._id);
-    bookValidation.ensureValidBook(book, req, res);
+    const book = await bookService.delete(req.params.id, req.user._id);
 
-    if (book) res.send({ success: true, message: 'Delete successfully' });
+    if (!book) {
+      bookValidation.sendBookNotFound(req, res)
+    } else {
+      bookValidation.sendSuccess(res)
+    }
   }
 }
 

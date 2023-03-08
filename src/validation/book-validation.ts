@@ -14,17 +14,18 @@ class BookValidation {
     }
   }
 
-  public ensureValidBook(
-    book: Document<any, any, IBook> | null,
-    req: Request,
-    res: Response
-  ) {
-    if (!book) {
-      res.status(404).send({
-        success: false,
-        message: `The book with id ${req.params.id} could not be found`
-      });
-    }
+  public sendSuccess(
+    res: Response,
+    book?: Document<any, any, IBook>,
+  ): void {
+    res.send({ success: true, book });
+  }
+
+  public sendBookNotFound(req: Request, res: Response): void {
+    res.status(404).send({
+      success: false,
+      message: `The book with id ${req.params.id} could not be found`
+    });
   }
 }
 
