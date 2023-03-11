@@ -1,8 +1,8 @@
-import express from 'express';
-import { userController } from '../controllers/user';
+import { Application } from 'express';
+import { UserController } from '../controllers/user';
 
-const router = express.Router();
+const userRoutes = (app: Application, userController: UserController): void => {
+	app.post('/users/login', (req, res) => userController.login(req, res));
+};
 
-router.post('/users/login', userController.login);
-
-export { router };
+export default userRoutes;

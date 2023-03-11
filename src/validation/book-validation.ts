@@ -1,32 +1,16 @@
 import { Request, Response } from 'express';
 import BadRequestError from '../errors/bad-request-error';
 import { BOOK_PATCHABLE_FIELDS } from '../utils/common/book-filters';
-import { IBook } from '../models/book';
-import { Document } from 'mongoose';
 
 class BookValidation {
-  public ensureValidEditFields(req: Request, res: Response): void {
-    const isValidEdition = Object.keys(req.body).every((k) =>
-      BOOK_PATCHABLE_FIELDS.includes(k)
-    );
-    if (!isValidEdition) {
-      throw new BadRequestError('Operation not valid');
-    }
-  }
-
-  public sendSuccess(
-    res: Response,
-    book?: Document<any, any, IBook>,
-  ): void {
-    res.send({ success: true, book });
-  }
-
-  public sendBookNotFound(req: Request, res: Response): void {
-    res.status(404).send({
-      success: false,
-      message: `The book with id ${req.params.id} could not be found`
-    });
-  }
+	public ensureValidEditFields(req: Request, res: Response): void {
+		const isValidEdition = Object.keys(req.body).every((k) =>
+			BOOK_PATCHABLE_FIELDS.includes(k)
+		);
+		if (!isValidEdition) {
+			throw new BadRequestError('Operation not valid');
+		}
+	}
 }
 
 export const bookValidation = new BookValidation();

@@ -5,13 +5,11 @@ import 'express-async-errors';
 
 dotenv.config();
 
-import { router as userRoutes } from './routes/user';
-import { router as bookRoutes } from './routes/book';
+import routes from './routes/routes';
 import { handleAuthentication } from './middlewares/authentication';
 import { errorHandler } from './middlewares/error-handler';
 
 import { connectingToMongoDB } from './db/mongoose';
-connectingToMongoDB();
 
 const app = express();
 const port = process.env.PORT;
@@ -21,16 +19,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(
-  '/books',
-  handleAuthentication.userAuthentication,
-  handleAuthentication.getUserRole
+	'/books',
+	handleAuthentication.userAuthentication,
+	handleAuthentication.getUserRole
 );
 
-app.use(userRoutes);
-app.use(bookRoutes);
+connectingToMongoDB();
+routes(app);
 
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Listening to port ${port}`);
+	console.log(`Listening to port ${port}`);
 });
